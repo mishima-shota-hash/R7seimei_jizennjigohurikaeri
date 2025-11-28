@@ -11,16 +11,26 @@
         
         body {
             font-family: 'Noto Sans JP', sans-serif;
-            background-color: #f0f9ff; /* Very light blue background */
+            background-color: #f0f9ff;
         }
 
         .sheet-container {
             max-width: 210mm; /* A4 width */
             margin: 20px auto;
             background: white;
-            padding: 40px;
+            padding: 30px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             border-radius: 8px;
+        }
+
+        /* Custom Select Styles to match inputs */
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+            background-position: right 0.2rem center;
+            background-repeat: no-repeat;
+            background-size: 1.25em 1.25em;
+            padding-right: 1.5rem;
         }
 
         /* Slider Customization */
@@ -32,12 +42,12 @@
         
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            height: 20px;
-            width: 20px;
+            height: 16px;
+            width: 16px;
             border-radius: 50%;
             background: #0ea5e9;
             cursor: pointer;
-            margin-top: -8px;
+            margin-top: -6px;
             box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
         }
         
@@ -61,27 +71,28 @@
                 margin: 0;
                 width: 100%;
                 max-width: none;
-                padding: 20px;
+                padding: 15px;
             }
             .no-print {
                 display: none !important;
             }
-            /* Ensure graphs and background colors print */
-            .bg-green-100 {
-                background-color: #dcfce7 !important;
-            }
-            .bg-blue-50 {
-                background-color: #eff6ff !important;
+            .bg-green-100 { background-color: #dcfce7 !important; }
+            .bg-blue-50 { background-color: #eff6ff !important; }
+            .bg-red-50 { background-color: #fef2f2 !important; }
+            
+            /* Ensure page breaks behave nicely */
+            .break-inside-avoid {
+                page-break-inside: avoid;
             }
         }
     </style>
 </head>
-<body class="text-slate-800">
+<body class="text-slate-800 text-sm">
 
-    <!-- Control Panel (Hidden on Print) -->
+    <!-- Control Panel -->
     <div class="no-print fixed top-4 right-4 z-50 flex gap-2">
-        <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow flex items-center gap-2 transition">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow flex items-center gap-2 transition text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
             </svg>
             PDF保存 / 印刷
@@ -90,128 +101,130 @@
 
     <div class="sheet-container">
         <!-- Header -->
-        <header class="border-b-2 border-green-600 pb-4 mb-6">
-            <div class="flex justify-between items-end">
-                <div>
-                    <h2 class="text-sm text-green-700 font-bold mb-1">島根県立飯南高等学校 総合的な探究の時間</h2>
-                    <h1 class="text-2xl font-bold">「生命地域学」活動振り返りシート</h1>
+        <header class="border-b-2 border-green-600 pb-3 mb-6">
+            <div class="flex flex-col md:flex-row justify-between items-end gap-4">
+                <div class="flex-shrink-0 w-full md:w-auto">
+                    <h2 class="text-xs text-green-700 font-bold mb-0.5">島根県立飯南高等学校 総合的な探究の時間</h2>
+                    <h1 class="text-xl font-bold whitespace-nowrap">「生命地域学」活動振り返りシート</h1>
                 </div>
-                <div class="text-right">
-                    <div class="flex gap-4 mb-2">
-                        <div class="flex flex-col items-start">
-                            <label class="text-xs text-gray-500">年 組 番</label>
-                            <input type="text" placeholder="例：2年1組 5番" class="border-b border-gray-400 focus:outline-none w-32 px-1">
+                
+                <div class="text-right flex-grow w-full md:w-auto">
+                    <!-- Dropdowns for Class Info -->
+                    <div class="flex gap-2 justify-end mb-2 items-center flex-wrap">
+                        <div class="flex items-center gap-1">
+                            <select id="grade-select" class="border-b border-gray-400 focus:outline-none bg-transparent py-1 pr-4 text-sm font-bold text-center w-16">
+                                <option value="" disabled selected>年</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </select>
+                            <span class="text-xs text-gray-500 whitespace-nowrap">年</span>
                         </div>
-                        <div class="flex flex-col items-start">
-                            <label class="text-xs text-gray-500">氏名</label>
-                            <input type="text" placeholder="飯南 太郎" class="border-b border-gray-400 focus:outline-none w-48 px-1">
+
+                        <div class="flex items-center gap-1">
+                            <select id="class-select" class="border-b border-gray-400 focus:outline-none bg-transparent py-1 pr-4 text-sm font-bold text-center w-16">
+                                <option value="" disabled selected>組</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                            </select>
+                            <span class="text-xs text-gray-500 whitespace-nowrap">組</span>
+                        </div>
+
+                        <div class="flex items-center gap-1">
+                            <select id="number-select" class="border-b border-gray-400 focus:outline-none bg-transparent py-1 pr-4 text-sm font-bold text-center w-16">
+                                <option value="" disabled selected>番</option>
+                                <!-- JS will populate 1-35 -->
+                            </select>
+                            <span class="text-xs text-gray-500 whitespace-nowrap">番</span>
+                        </div>
+
+                        <div class="flex items-center gap-2 ml-2 flex-grow md:flex-grow-0">
+                            <label class="text-[10px] text-gray-500 whitespace-nowrap">氏名</label>
+                            <input type="text" placeholder="飯南 太郎" class="border-b border-gray-400 focus:outline-none px-1 text-sm w-32 md:w-40">
                         </div>
                     </div>
-                    <div class="flex flex-col items-end">
-                         <label class="text-xs text-gray-500 w-full text-left">イベント・活動名</label>
-                        <input type="text" placeholder="例：地域活性化ボランティア" class="border-b border-gray-400 focus:outline-none w-full px-1 text-lg font-bold text-right">
+
+                    <div class="flex flex-col items-end w-full">
+                         <label class="text-[10px] text-gray-500 w-full text-left">イベント・活動名</label>
+                        <input type="text" placeholder="例：地域活性化ボランティア" class="border-b border-gray-400 focus:outline-none w-full px-1 text-base font-bold text-right">
                     </div>
                 </div>
             </div>
         </header>
 
         <!-- Context Description -->
-        <div class="mb-8 bg-green-50 p-4 rounded-lg border border-green-200 text-sm">
-            <p class="font-bold text-green-800 mb-2">【飯南町で育てたい7つの資質・能力】</p>
+        <div class="mb-6 bg-green-50 p-3 rounded-lg border border-green-200 text-xs text-center">
+            <p class="font-bold text-green-800 mb-1">【飯南町で育てたい7つの資質・能力】</p>
             <p>この活動を通して、以下の7つの力がどのように変化したか、5段階（5:とてもあてはまる 〜 1:あてはまらない）で自己評価を行いましょう。</p>
         </div>
 
-        <!-- Main Content Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            
-            <!-- Left Column: Inputs -->
-            <div>
-                <h3 class="font-bold text-lg mb-4 border-l-4 border-blue-500 pl-2">1. 自己評価入力</h3>
-                
-                <div class="space-y-6" id="questions-container">
-                    <!-- Questions will be generated by JS -->
+        <!-- SECTION 1: Inputs (Top) -->
+        <div class="mb-8">
+            <h3 class="font-bold text-base mb-3 border-l-4 border-blue-500 pl-2">1. 自己評価入力</h3>
+            <!-- Changed to 2 columns on medium screens and up (md:grid-cols-2) instead of 4 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="questions-container">
+                <!-- Questions will be generated by JS -->
+            </div>
+        </div>
+
+        <!-- SECTION 2: Chart (Middle) -->
+        <div class="mb-8 break-inside-avoid">
+            <h3 class="font-bold text-base mb-3 border-l-4 border-blue-500 pl-2">2. 成長の可視化</h3>
+            <div class="flex flex-col items-center">
+                <div class="relative w-full max-w-[400px] aspect-square">
+                    <canvas id="radarChart"></canvas>
+                </div>
+                <div class="text-center text-[10px] text-gray-500 mt-2">
+                    <span class="inline-block w-2.5 h-2.5 bg-blue-400 rounded-full mr-1"></span>事前
+                    <span class="inline-block w-2.5 h-2.5 bg-red-400 rounded-full ml-4 mr-1"></span>事後
                 </div>
             </div>
+        </div>
 
-            <!-- Right Column: Visualization & Reflection -->
-            <div class="flex flex-col h-full">
-                <!-- Chart -->
-                <div class="mb-8">
-                    <h3 class="font-bold text-lg mb-4 border-l-4 border-blue-500 pl-2">2. 成長の可視化</h3>
-                    <div class="relative w-full aspect-square max-h-[400px] mx-auto">
-                        <canvas id="radarChart"></canvas>
-                    </div>
-                    <div class="text-center text-xs text-gray-500 mt-2">
-                        <span class="inline-block w-3 h-3 bg-blue-400 rounded-full mr-1"></span>事前
-                        <span class="inline-block w-3 h-3 bg-red-400 rounded-full ml-4 mr-1"></span>事後
-                    </div>
-                </div>
-
-                <!-- Reflection Text -->
-                <div class="flex-grow">
-                    <h3 class="font-bold text-lg mb-2 border-l-4 border-blue-500 pl-2">3. 活動の振り返り</h3>
-                    <p class="text-xs text-gray-600 mb-2">
-                        グラフの変化や活動を通して感じたこと、今後どのように活かしていきたいかを記入してください。
-                    </p>
-                    <div class="relative">
-                        <textarea 
-                            id="reflection-text"
-                            class="w-full h-40 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm leading-relaxed resize-none"
-                            placeholder="ここに振り返りを記入してください（200文字程度）。&#13;&#10;例：主体性のスコアが上がったのは、自分から役割を見つけて動けたからだと思う。一方で計画力については、準備不足を感じる場面があったため、次は余裕を持ったスケジュールを立てたい。"
-                            maxlength="300"
-                        ></textarea>
-                        <div class="absolute bottom-2 right-2 text-xs text-gray-400">
-                            <span id="char-count">0</span> / 200文字程度
-                        </div>
-                    </div>
+        <!-- SECTION 3: Reflection (Bottom) -->
+        <div class="break-inside-avoid">
+            <h3 class="font-bold text-base mb-2 border-l-4 border-blue-500 pl-2">3. 活動の振り返り</h3>
+            <p class="text-[10px] text-gray-600 mb-1">
+                グラフの変化や活動を通して感じたこと、今後どのように活かしていきたいかを記入してください。
+            </p>
+            <div class="relative">
+                <textarea 
+                    id="reflection-text"
+                    class="w-full h-32 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm leading-relaxed resize-none"
+                    placeholder="ここに振り返りを記入してください（200文字程度）。&#13;&#10;例：主体性のスコアが上がったのは、自分から役割を見つけて動けたからだと思う。一方で計画力については、準備不足を感じる場面があったため、次は余裕を持ったスケジュールを立てたい。"
+                    maxlength="300"
+                ></textarea>
+                <div class="absolute bottom-2 right-2 text-[10px] text-gray-400">
+                    <span id="char-count">0</span> / 200文字程度
                 </div>
             </div>
         </div>
 
         <!-- Footer -->
-        <footer class="mt-8 text-center text-xs text-gray-400 border-t pt-4">
+        <footer class="mt-8 text-center text-[10px] text-gray-400 border-t pt-4">
             島根県立飯南高等学校 生命地域学
         </footer>
     </div>
 
     <script>
+        // Populate Number Select (1-35)
+        const numberSelect = document.getElementById('number-select');
+        for (let i = 1; i <= 35; i++) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = i;
+            numberSelect.appendChild(option);
+        }
+
         // Data derived from the user's provided image
         const qualities = [
-            { 
-                id: 'q1', 
-                name: '主体性', 
-                desc: '達成すべきねらいを自ら考え判断し、積極的に取り組む' 
-            },
-            { 
-                id: 'q2', 
-                name: '課題発見力', 
-                desc: '多様な資源（モノ・コト）に関心をもち、さまざまな課題を発見する' 
-            },
-            { 
-                id: 'q3', 
-                name: '計画力', 
-                desc: '目標を見通して、今何をすればよいか考える' 
-            },
-            { 
-                id: 'q4', 
-                name: '創造力', 
-                desc: 'これまで得た知識や経験をもとに、自分や地域の未来を描く' 
-            },
-            { 
-                id: 'q5', 
-                name: '巻き込む力', 
-                desc: '地域等の多様な資源（ヒト）に働きかけ協働する' 
-            },
-            { 
-                id: 'q6', 
-                name: '実行力', 
-                desc: '自らの考えや夢の実現に向けて、挑戦し未来を切り拓く' 
-            },
-            { 
-                id: 'q7', 
-                name: '発信力', 
-                desc: '地域・学校の魅力や課題、自らの考えや夢を発信する' 
-            }
+            { id: 'q1', name: '主体性', desc: '自ら考え判断し、積極的に取り組む' }, 
+            { id: 'q2', name: '課題発見力', desc: '多様な資源に関心を持ち課題を発見する' },
+            { id: 'q3', name: '計画力', desc: '目標を見通して、今何をすべきか考える' },
+            { id: 'q4', name: '創造力', desc: '知識や経験をもとに、未来を描く' },
+            { id: 'q5', name: '巻き込む力', desc: '多様な資源（ヒト）に働きかけ協働する' },
+            { id: 'q6', name: '実行力', desc: '夢の実現に向けて挑戦し未来を拓く' },
+            { id: 'q7', name: '発信力', desc: '魅力や課題、自らの考えを発信する' }
         ];
 
         // State
@@ -220,46 +233,44 @@
             post: Array(7).fill(3)
         };
 
-        // Initialize UI
+        // Initialize UI (Questions)
         const container = document.getElementById('questions-container');
 
         qualities.forEach((q, index) => {
             const div = document.createElement('div');
-            div.className = 'bg-white p-3 rounded border border-gray-100 shadow-sm';
+            // Card style tailored for grid layout
+            div.className = 'bg-white p-2.5 rounded border border-gray-200 shadow-sm flex flex-col justify-between h-full';
             div.innerHTML = `
-                <div class="mb-2">
-                    <span class="inline-block bg-green-600 text-white text-xs px-2 py-1 rounded font-bold mr-2">${index + 1}</span>
-                    <span class="font-bold text-gray-800">${q.name}</span>
+                <div>
+                    <div class="mb-1 flex items-center">
+                        <span class="inline-block bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold mr-1.5">${index + 1}</span>
+                        <span class="font-bold text-sm text-gray-800">${q.name}</span>
+                    </div>
+                    <!-- Smaller font size and fixed height for description -->
+                    <p class="text-[9px] text-gray-500 mb-2 leading-tight h-8 overflow-hidden">${q.desc}</p>
                 </div>
-                <p class="text-xs text-gray-600 mb-3 pl-1">${q.desc}</p>
                 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-2 mt-auto">
                     <!-- Pre Input -->
-                    <div class="bg-blue-50 p-2 rounded">
-                        <div class="flex justify-between text-xs text-blue-800 font-bold mb-1">
+                    <div class="bg-blue-50 p-1.5 rounded text-center">
+                        <div class="flex justify-between items-center text-[10px] text-blue-800 font-bold mb-1">
                             <span>事前</span>
-                            <span id="val-pre-${index}">3</span>
+                            <span id="val-pre-${index}" class="text-xs">3</span>
                         </div>
                         <input type="range" min="1" max="5" step="1" value="3" 
-                            class="w-full accent-blue-500"
+                            class="w-full accent-blue-500 h-1"
                             oninput="updateScore('pre', ${index}, this.value)">
-                        <div class="flex justify-between text-[10px] text-gray-400 px-1">
-                            <span>1</span><span>5</span>
-                        </div>
                     </div>
 
                     <!-- Post Input -->
-                    <div class="bg-red-50 p-2 rounded">
-                        <div class="flex justify-between text-xs text-red-800 font-bold mb-1">
+                    <div class="bg-red-50 p-1.5 rounded text-center">
+                        <div class="flex justify-between items-center text-[10px] text-red-800 font-bold mb-1">
                             <span>事後</span>
-                            <span id="val-post-${index}">3</span>
+                            <span id="val-post-${index}" class="text-xs">3</span>
                         </div>
                         <input type="range" min="1" max="5" step="1" value="3" 
-                            class="w-full accent-red-500"
+                            class="w-full accent-red-500 h-1"
                             oninput="updateScore('post', ${index}, this.value)">
-                        <div class="flex justify-between text-[10px] text-gray-400 px-1">
-                            <span>1</span><span>5</span>
-                        </div>
                     </div>
                 </div>
             `;
@@ -282,7 +293,9 @@
                         pointBackgroundColor: 'rgb(59, 130, 246)',
                         pointBorderColor: '#fff',
                         pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: 'rgb(59, 130, 246)'
+                        pointHoverBorderColor: 'rgb(59, 130, 246)',
+                        borderWidth: 2,
+                        pointRadius: 3
                     },
                     {
                         label: '事後',
@@ -293,7 +306,9 @@
                         pointBackgroundColor: 'rgb(239, 68, 68)',
                         pointBorderColor: '#fff',
                         pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: 'rgb(239, 68, 68)'
+                        pointHoverBorderColor: 'rgb(239, 68, 68)',
+                        borderWidth: 2,
+                        pointRadius: 3
                     }
                 ]
             },
@@ -302,27 +317,18 @@
                 maintainAspectRatio: false,
                 scales: {
                     r: {
-                        angleLines: {
-                            display: true,
-                            color: '#e5e7eb'
-                        },
+                        angleLines: { display: true, color: '#e5e7eb' },
                         suggestedMin: 0,
                         suggestedMax: 5,
-                        grid: {
-                            color: '#e5e7eb'
-                        },
+                        grid: { color: '#e5e7eb' },
                         pointLabels: {
-                            font: {
-                                size: 11,
-                                weight: 'bold',
-                                family: "'Noto Sans JP', sans-serif"
-                            },
+                            font: { size: 11, weight: 'bold', family: "'Noto Sans JP', sans-serif" },
                             color: '#374151'
                         },
                         ticks: {
                             stepSize: 1,
                             backdropColor: 'transparent',
-                            display: false // Hide numbers on axis to make it cleaner
+                            display: false
                         }
                     }
                 },
@@ -330,9 +336,9 @@
                     legend: {
                         position: 'bottom',
                         labels: {
-                            font: {
-                                family: "'Noto Sans JP', sans-serif"
-                            }
+                            font: { size: 10, family: "'Noto Sans JP', sans-serif" },
+                            boxWidth: 10,
+                            padding: 20
                         }
                     }
                 }
@@ -341,13 +347,9 @@
 
         // Update Logic
         window.updateScore = function(type, index, value) {
-            // Update state
             scores[type][index] = parseInt(value);
-            
-            // Update Label text
             document.getElementById(`val-${type}-${index}`).innerText = value;
             
-            // Update Chart
             if (type === 'pre') {
                 radarChart.data.datasets[0].data = scores.pre;
             } else {
