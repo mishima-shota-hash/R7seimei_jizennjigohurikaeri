@@ -23,7 +23,6 @@
             border-radius: 8px;
         }
 
-        /* Custom Select Styles to match inputs */
         select {
             appearance: none;
             background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
@@ -33,7 +32,6 @@
             padding-right: 1.5rem;
         }
 
-        /* Slider Customization */
         input[type=range] {
             -webkit-appearance: none;
             width: 100%;
@@ -59,59 +57,43 @@
             border-radius: 2px;
         }
 
-        /* Print Styles */
         @media print {
-            /* 印刷時に非表示にする要素 */
-            .print-hide {
-                display: none !important;
-            }
-
-            /* 共通設定 */
-            body {
-                background: white;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-            .sheet-container {
-                box-shadow: none;
-                margin: 0;
-                width: 100%;
-                max-width: none;
-                padding: 15px;
-            }
-            .no-print {
-                display: none !important;
-            }
+            .print-hide { display: none !important; }
+            body { background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .sheet-container { box-shadow: none; margin: 0; width: 100%; max-width: none; padding: 15px; }
+            .no-print { display: none !important; }
             .bg-green-100 { background-color: #dcfce7 !important; }
             .bg-blue-50 { background-color: #eff6ff !important; }
             .bg-red-50 { background-color: #fef2f2 !important; }
-            
-            /* 振り返りテキストエリアの調整: 印刷時は背景を白くし枠線をなくす（内容を見せるため） */
             #reflection-text {
-                -webkit-appearance: none;
-                -moz-appearance: none;
-                appearance: none;
-                border: 1px dashed #ccc !important;
-                background-color: white !important;
+                -webkit-appearance: none; -moz-appearance: none; appearance: none;
+                border: 1px dashed #ccc !important; background-color: white !important;
             }
-            
-            /* Ensure page breaks behave nicely */
-            .break-inside-avoid {
-                page-break-inside: avoid;
-            }
+            .break-inside-avoid { page-break-inside: avoid; }
         }
     </style>
 </head>
 <body class="text-slate-800 text-sm">
 
     <!-- Control Panel -->
-    <div class="no-print fixed top-4 right-4 z-50 flex gap-2">
-        <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow flex items-center gap-2 transition text-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-            </svg>
-            PDF保存 / 印刷
-        </button>
+    <div class="no-print fixed top-4 right-4 z-50 flex flex-col gap-2 items-end">
+        <div class="flex gap-2">
+            <button onclick="resetData()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded shadow flex items-center gap-2 transition text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                リセット
+            </button>
+            <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow flex items-center gap-2 transition text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                </svg>
+                PDF保存 / 印刷
+            </button>
+        </div>
+        <div id="save-status" class="text-xs text-green-600 bg-white px-2 py-1 rounded shadow hidden">
+            自動保存しました
+        </div>
     </div>
 
     <div class="sheet-container">
@@ -127,7 +109,7 @@
                     <!-- Dropdowns for Class Info -->
                     <div class="flex gap-2 justify-end mb-2 items-center flex-wrap">
                         <div class="flex items-center gap-1">
-                            <select id="grade-select" class="border-b border-gray-400 focus:outline-none bg-transparent py-1 pr-4 text-sm font-bold text-center w-16">
+                            <select id="grade-select" onchange="autoSave()" class="border-b border-gray-400 focus:outline-none bg-transparent py-1 pr-4 text-sm font-bold text-center w-16">
                                 <option value="" disabled selected>年</option>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
@@ -137,7 +119,7 @@
                         </div>
 
                         <div class="flex items-center gap-1">
-                            <select id="class-select" class="border-b border-gray-400 focus:outline-none bg-transparent py-1 pr-4 text-sm font-bold text-center w-16">
+                            <select id="class-select" onchange="autoSave()" class="border-b border-gray-400 focus:outline-none bg-transparent py-1 pr-4 text-sm font-bold text-center w-16">
                                 <option value="" disabled selected>組</option>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
@@ -146,7 +128,7 @@
                         </div>
 
                         <div class="flex items-center gap-1">
-                            <select id="number-select" class="border-b border-gray-400 focus:outline-none bg-transparent py-1 pr-4 text-sm font-bold text-center w-16">
+                            <select id="number-select" onchange="autoSave()" class="border-b border-gray-400 focus:outline-none bg-transparent py-1 pr-4 text-sm font-bold text-center w-16">
                                 <option value="" disabled selected>番</option>
                                 <!-- JS will populate 1-35 -->
                             </select>
@@ -155,20 +137,19 @@
 
                         <div class="flex items-center gap-2 ml-2 flex-grow md:flex-grow-0">
                             <label class="text-[10px] text-gray-500 whitespace-nowrap">氏名</label>
-                            <input type="text" placeholder="飯南 太郎" class="border-b border-gray-400 focus:outline-none px-1 text-sm w-32 md:w-40">
+                            <input id="student-name" oninput="autoSave()" type="text" placeholder="飯南 太郎" class="border-b border-gray-400 focus:outline-none px-1 text-sm w-32 md:w-40">
                         </div>
                     </div>
 
                     <div class="flex flex-col items-end w-full">
                          <label class="text-[10px] text-gray-500 w-full text-left">イベント・活動名</label>
-                        <input type="text" placeholder="例：地域活性化ボランティア" class="border-b border-gray-400 focus:outline-none w-full px-1 text-base font-bold text-right">
+                        <input id="event-name" oninput="autoSave()" type="text" placeholder="例：地域活性化ボランティア" class="border-b border-gray-400 focus:outline-none w-full px-1 text-base font-bold text-right">
                     </div>
                 </div>
             </div>
         </header>
 
         <!-- Context Description (HIDE ON PRINT) -->
-        <!-- Modified for better text balance -->
         <div class="mb-6 bg-green-50 p-4 rounded-lg border border-green-200 text-xs text-center print-hide">
             <p class="font-bold text-green-800 mb-2 text-sm">【飯南町で育てたい7つの資質・能力】</p>
             <p class="leading-relaxed text-green-900">
@@ -208,6 +189,7 @@
             <div class="relative">
                 <textarea 
                     id="reflection-text"
+                    oninput="autoSave()"
                     class="w-full h-32 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm leading-relaxed resize-none"
                     placeholder="ここに振り返りを記入してください（200文字程度）。&#13;&#10;例：主体性のスコアが上がったのは、自分から役割を見つけて動けたからだと思う。一方で計画力については、準備不足を感じる場面があったため、次は余裕を持ったスケジュールを立てたい。"
                     maxlength="300"
@@ -246,7 +228,7 @@
         ];
 
         // State
-        const scores = {
+        let scores = {
             pre: Array(7).fill(3),
             post: Array(7).fill(3)
         };
@@ -256,7 +238,6 @@
 
         qualities.forEach((q, index) => {
             const div = document.createElement('div');
-            // FIX: print-hideクラスを動的に生成する要素に適用します
             div.className = 'bg-white p-2.5 rounded border border-gray-200 shadow-sm flex flex-col justify-between h-full print-hide'; 
             div.innerHTML = `
                 <div>
@@ -264,7 +245,6 @@
                         <span class="inline-block bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold mr-1.5">${index + 1}</span>
                         <span class="font-bold text-sm text-gray-800">${q.name}</span>
                     </div>
-                    <!-- Smaller font size for description -->
                     <p class="text-[9px] text-gray-500 mb-2 leading-tight h-8 overflow-hidden">${q.desc}</p>
                 </div>
                 
@@ -275,7 +255,7 @@
                             <span>事前</span>
                             <span id="val-pre-${index}" class="text-xs">3</span>
                         </div>
-                        <input type="range" min="1" max="5" step="1" value="3" 
+                        <input id="input-pre-${index}" type="range" min="1" max="5" step="1" value="3" 
                             class="w-full accent-blue-500 h-1"
                             oninput="updateScore('pre', ${index}, this.value)">
                     </div>
@@ -286,7 +266,7 @@
                             <span>事後</span>
                             <span id="val-post-${index}" class="text-xs">3</span>
                         </div>
-                        <input type="range" min="1" max="5" step="1" value="3" 
+                        <input id="input-post-${index}" type="range" min="1" max="5" step="1" value="3" 
                             class="w-full accent-red-500 h-1"
                             oninput="updateScore('post', ${index}, this.value)">
                     </div>
@@ -306,7 +286,7 @@
                         label: '事前',
                         data: scores.pre,
                         fill: true,
-                        backgroundColor: 'rgba(59, 130, 246, 0.2)', // blue-500
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
                         borderColor: 'rgb(59, 130, 246)',
                         pointBackgroundColor: 'rgb(59, 130, 246)',
                         pointBorderColor: '#fff',
@@ -319,7 +299,7 @@
                         label: '事後',
                         data: scores.post,
                         fill: true,
-                        backgroundColor: 'rgba(239, 68, 68, 0.2)', // red-500
+                        backgroundColor: 'rgba(239, 68, 68, 0.2)',
                         borderColor: 'rgb(239, 68, 68)',
                         pointBackgroundColor: 'rgb(239, 68, 68)',
                         pointBorderColor: '#fff',
@@ -343,27 +323,95 @@
                             font: { size: 11, weight: 'bold', family: "'Noto Sans JP', sans-serif" },
                             color: '#374151'
                         },
-                        ticks: {
-                            stepSize: 1,
-                            backdropColor: 'transparent',
-                            display: false
-                        }
+                        ticks: { stepSize: 1, backdropColor: 'transparent', display: false }
                     }
                 },
                 plugins: {
                     legend: {
                         position: 'bottom',
-                        labels: {
-                            font: { size: 10, family: "'Noto Sans JP', sans-serif" },
-                            boxWidth: 10,
-                            padding: 20
-                        }
+                        labels: { font: { size: 10, family: "'Noto Sans JP', sans-serif" }, boxWidth: 10, padding: 20 }
                     }
                 }
             }
         });
 
-        // Update Logic
+        // --- Logic for Auto Save & Load ---
+        const STORAGE_KEY = 'iinan_reflection_v1';
+        let saveTimeout;
+
+        function autoSave() {
+            const data = {
+                grade: document.getElementById('grade-select').value,
+                class: document.getElementById('class-select').value,
+                number: document.getElementById('number-select').value,
+                name: document.getElementById('student-name').value,
+                event: document.getElementById('event-name').value,
+                reflection: document.getElementById('reflection-text').value,
+                scores: scores
+            };
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            
+            // Show saved indicator briefly
+            const status = document.getElementById('save-status');
+            status.classList.remove('hidden');
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+                status.classList.add('hidden');
+            }, 2000);
+            
+            // Update char count
+            updateCharCount();
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (!saved) return;
+
+            try {
+                const data = JSON.parse(saved);
+                
+                // Restore inputs
+                if(data.grade) document.getElementById('grade-select').value = data.grade;
+                if(data.class) document.getElementById('class-select').value = data.class;
+                if(data.number) document.getElementById('number-select').value = data.number;
+                if(data.name) document.getElementById('student-name').value = data.name;
+                if(data.event) document.getElementById('event-name').value = data.event;
+                if(data.reflection) document.getElementById('reflection-text').value = data.reflection;
+
+                // Restore Scores
+                if(data.scores) {
+                    scores = data.scores;
+                    
+                    // Update UI Sliders & Labels
+                    scores.pre.forEach((val, i) => {
+                        document.getElementById(`input-pre-${i}`).value = val;
+                        document.getElementById(`val-pre-${i}`).innerText = val;
+                    });
+                    scores.post.forEach((val, i) => {
+                        document.getElementById(`input-post-${i}`).value = val;
+                        document.getElementById(`val-post-${i}`).innerText = val;
+                    });
+
+                    // Update Chart
+                    radarChart.data.datasets[0].data = scores.pre;
+                    radarChart.data.datasets[1].data = scores.post;
+                    radarChart.update();
+                }
+                updateCharCount();
+
+            } catch(e) {
+                console.error("Save data corrupted", e);
+            }
+        }
+
+        function resetData() {
+            if(confirm("入力したデータをすべて消去してリセットしますか？")) {
+                localStorage.removeItem(STORAGE_KEY);
+                location.reload();
+            }
+        }
+
         window.updateScore = function(type, index, value) {
             scores[type][index] = parseInt(value);
             document.getElementById(`val-${type}-${index}`).innerText = value;
@@ -374,21 +422,23 @@
                 radarChart.data.datasets[1].data = scores.post;
             }
             radarChart.update();
+            autoSave(); // Trigger save on slider change
         };
 
-        // Text Counter
-        const textArea = document.getElementById('reflection-text');
-        const countSpan = document.getElementById('char-count');
-        
-        textArea.addEventListener('input', function() {
-            const count = this.value.length;
+        function updateCharCount() {
+            const textArea = document.getElementById('reflection-text');
+            const countSpan = document.getElementById('char-count');
+            const count = textArea.value.length;
             countSpan.innerText = count;
             if(count > 200) {
                 countSpan.classList.add('text-red-500', 'font-bold');
             } else {
                 countSpan.classList.remove('text-red-500', 'font-bold');
             }
-        });
+        }
+
+        // Initialize
+        loadData();
 
     </script>
 </body>
